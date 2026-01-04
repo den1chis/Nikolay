@@ -157,6 +157,14 @@ class DirectionModal {
             }
         });
 
+        // Prevent modal close when clicking on buttons inside modal
+        document.querySelectorAll('.detail-content .btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                // Modal will stay open, just scroll to contact
+            });
+        });
+
         // Close on ESC key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && this.modalSection.classList.contains('active')) {
