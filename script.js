@@ -161,6 +161,7 @@ class DirectionModal {
         document.querySelectorAll('.detail-content .btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
+                this.closeModal();
                 // Modal will stay open, just scroll to contact
             });
         });
@@ -177,6 +178,9 @@ class DirectionModal {
         const detailContent = document.querySelector(`#detail-${direction}`);
 
         if (detailContent) {
+            // Calculate scrollbar width to prevent jump
+            const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+            
             // Show modal section
             this.modalSection.classList.add('active');
 
@@ -188,8 +192,16 @@ class DirectionModal {
             // Show selected content
             detailContent.classList.add('active');
 
-            // Prevent body scroll
+            // Prevent body scroll and compensate for scrollbar
             document.body.style.overflow = 'hidden';
+            document.body.style.paddingRight = `${scrollbarWidth}px`;
+            document.documentElement.style.setProperty('--scrollbar-compensation', `${scrollbarWidth}px`);
+            
+            // Fix WhatsApp button position
+            const whatsappBtn = document.querySelector('.whatsapp-float');
+            if (whatsappBtn) {
+                whatsappBtn.style.right = `${25 + scrollbarWidth}px`;
+            }
 
             // Track event
             this.trackEvent('Direction Modal', 'open', direction);
@@ -203,8 +215,16 @@ class DirectionModal {
             content.classList.remove('active');
         });
 
-        // Restore body scroll
+        // Restore body scroll and padding
         document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+        document.documentElement.style.setProperty('--scrollbar-compensation', '0px');
+        
+        // Restore WhatsApp button position
+        const whatsappBtn = document.querySelector('.whatsapp-float');
+        if (whatsappBtn) {
+            whatsappBtn.style.right = '';
+        }
     }
 
     trackEvent(category, action, label) {
@@ -246,6 +266,23 @@ class StoriesSlider {
         // Touch events for mobile
         this.initTouchEvents();
 
+        // Arrow buttons for stories
+        this.prevBtn = document.querySelector('.slider-arrow-prev-stories');
+        this.nextBtn = document.querySelector('.slider-arrow-next-stories');
+        
+        if (this.prevBtn) {
+            this.prevBtn.addEventListener('click', () => {
+                this.prevSlide();
+                this.resetAutoplay();
+            });
+        }
+        
+        if (this.nextBtn) {
+            this.nextBtn.addEventListener('click', () => {
+                this.nextSlide();
+                this.resetAutoplay();
+            });
+        }
         // Start autoplay
         this.startAutoplay();
 
@@ -254,11 +291,15 @@ class StoriesSlider {
     }
 
     createDots() {
+        this.dotsContainer.innerHTML = ''; // Очищаем перед созданием
         this.slides.forEach((_, index) => {
             const dot = document.createElement('span');
             dot.classList.add('dot-story');
             if (index === 0) dot.classList.add('active');
-            dot.addEventListener('click', () => this.goToSlide(index));
+            dot.addEventListener('click', () => {
+                this.goToSlide(index);
+                this.resetAutoplay();
+            });
             this.dotsContainer.appendChild(dot);
         });
         this.dots = document.querySelectorAll('.dot-story');
@@ -376,6 +417,23 @@ class CredentialsSlider {
 
         // Touch events for mobile
         this.initTouchEvents();
+        
+        this.prevBtn = document.querySelector('.slider-arrow-prev');
+        this.nextBtn = document.querySelector('.slider-arrow-next');
+        
+        if (this.prevBtn) {
+            this.prevBtn.addEventListener('click', () => {
+                this.prevSlide();
+                this.resetAutoplay();
+            });
+        }
+        
+        if (this.nextBtn) {
+            this.nextBtn.addEventListener('click', () => {
+                this.nextSlide();
+                this.resetAutoplay();
+            });
+        }
 
         // Start autoplay
         this.startAutoplay();
@@ -385,11 +443,15 @@ class CredentialsSlider {
     }
 
     createDots() {
+        this.dotsContainer.innerHTML = ''; // Очищаем перед созданием
         this.slides.forEach((_, index) => {
             const dot = document.createElement('span');
             dot.classList.add('dot-credential');
             if (index === 0) dot.classList.add('active');
-            dot.addEventListener('click', () => this.goToSlide(index));
+            dot.addEventListener('click', () => {
+                this.goToSlide(index);
+                this.resetAutoplay();
+            });
             this.dotsContainer.appendChild(dot);
         });
         this.dots = document.querySelectorAll('.dot-credential');
@@ -702,7 +764,126 @@ if ('serviceWorker' in navigator) {
         //     .catch(error => console.log('SW registration failed:', error));
     });
 }
+// ===================================
+// VIEW CREDENTIAL MODAL
+// ===================================
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.view-credential').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const img = this.closest('.credential-card').querySelector('.credential-image img');
+            const imgSrc = img.src;
+            
+            // Create modal
+            const modal = document.createElement('div');
+            modal.className = 'credential-modal';
+            modal.innerHTML = `
+                <div class="credential-modal-content">
+                    <button class="credential-modal-close" aria-label="Закрыть">&times;</button>
+                    <img src="${imgSrc}" alt="Диплом">
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Calculate scrollbar width to prevent jump
+            const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+            document.body.style.overflow = 'hidden';
+            document.body.style.paddingRight = `${scrollbarWidth}px`;
+            
+            // Add styles if not exists
+            if (!document.getElementById('credential-modal-styles')) {
+                const style = document.createElement('style');
+                style.id = 'credential-modal-styles';
+                style.textContent = `
+                    .credential-modal {
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background: rgba(0, 0, 0, 0.9);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        z-index: 10000;
+                        padding: 20px;
+                        animation: fadeIn 0.3s ease;
+                    }
+                    @keyframes fadeIn {
+                        from { opacity: 0; }
+                        to { opacity: 1; }
+                    }
+                    .credential-modal-content {
+                        position: relative;
+                        max-width: 90%;
+                        max-height: 90%;
+                    }
+                    .credential-modal img {
+                        max-width: 100%;
+                        max-height: 90vh;
+                        object-fit: contain;
+                        border-radius: 8px;
+                    }
+                    .credential-modal-close {
+                        position: absolute;
+                        top: -40px;
+                        right: -40px;
+                        width: 40px;
+                        height: 40px;
+                        background: white;
+                        border: none;
+                        border-radius: 50%;
+                        font-size: 24px;
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        transition: transform 0.2s;
+                        color: #4A4A4A;
+                        font-weight: bold;
+                    }
+                    .credential-modal-close:hover {
+                        transform: scale(1.1) rotate(90deg);
+                        background: #5B9AA9;
+                        color: white;
+                    }
+                    @media (max-width: 768px) {
+                        .credential-modal-close {
+                            top: 10px;
+                            right: 10px;
+                        }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            // Close modal
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal || e.target.classList.contains('credential-modal-close')) {
+                    modal.remove();
+                    document.body.style.overflow = '';
+                    document.body.style.paddingRight = '';
+                }
+            });
+            
+            // Close on ESC key
+            const handleEscape = (e) => {
+                if (e.key === 'Escape') {
+                    modal.remove();
+                    document.body.style.overflow = '';
+                    document.body.style.paddingRight = '';
+                    document.removeEventListener('keydown', handleEscape);
+                }
+            };
+            document.addEventListener('keydown', handleEscape);
+        });
+    });
+});
 
+// ===================================
+// CONSOLE WELCOME MESSAGE
+// ===================================
 // ===================================
 // CONSOLE WELCOME MESSAGE
 // ===================================
