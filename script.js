@@ -273,18 +273,18 @@ class StoriesSlider {
         if (this.prevBtn) {
             this.prevBtn.addEventListener('click', () => {
                 this.prevSlide();
-                this.resetAutoplay();
+                //this.resetAutoplay();
             });
         }
         
         if (this.nextBtn) {
             this.nextBtn.addEventListener('click', () => {
                 this.nextSlide();
-                this.resetAutoplay();
+                //this.resetAutoplay();
             });
         }
         // Start autoplay
-        this.startAutoplay();
+        //this.startAutoplay();
 
         // Show first slide
         this.showSlide(0);
@@ -881,6 +881,27 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.story-read-more').forEach(button => {
+        button.addEventListener('click', function() {
+            const storyContent = this.previousElementSibling;
+            
+            if (storyContent.classList.contains('collapsed')) {
+                storyContent.classList.remove('collapsed');
+                storyContent.classList.add('expanded');
+                this.textContent = 'Скрыть';
+            } else {
+                storyContent.classList.add('collapsed');
+                storyContent.classList.remove('expanded');
+                this.textContent = 'Читать далее';
+                // Scroll to top of story card
+                this.closest('.story-card').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        });
+    });
+});
+
 // ===================================
 // CONSOLE WELCOME MESSAGE
 // ===================================
@@ -890,4 +911,4 @@ document.addEventListener('DOMContentLoaded', () => {
 console.log('%c👋 Добро пожаловать!', 'font-size: 20px; font-weight: bold; color: #5B9AA9;');
 console.log('%cНиколай Николаевич Абаза - Психолог-аддиктолог', 'font-size: 14px; color: #4A4A4A;');
 console.log('%cПервый шаг к свободе от зависимости', 'font-size: 12px; color: #6A6A6A;');
-console.log('%c📞 +7 771 103 12 32', 'font-size: 12px; color: #5B9AA9;');
+console.log('%c📞 +7 707 912 7964', 'font-size: 12px; color: #5B9AA9;');
