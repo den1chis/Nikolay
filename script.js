@@ -259,13 +259,13 @@ class StoriesSlider {
 
     init() {
         if (this.slides.length === 0) return;
-
+    
         // Create dots
         this.createDots();
-
+    
         // Touch events for mobile
         this.initTouchEvents();
-
+    
         // Arrow buttons for stories
         this.prevBtn = document.querySelector('.slider-arrow-prev-stories');
         this.nextBtn = document.querySelector('.slider-arrow-next-stories');
@@ -273,19 +273,15 @@ class StoriesSlider {
         if (this.prevBtn) {
             this.prevBtn.addEventListener('click', () => {
                 this.prevSlide();
-                //this.resetAutoplay();
             });
         }
         
         if (this.nextBtn) {
             this.nextBtn.addEventListener('click', () => {
                 this.nextSlide();
-                //this.resetAutoplay();
             });
         }
-        // Start autoplay
-        //this.startAutoplay();
-
+    
         // Show first slide
         this.showSlide(0);
     }
@@ -298,7 +294,6 @@ class StoriesSlider {
             if (index === 0) dot.classList.add('active');
             dot.addEventListener('click', () => {
                 this.goToSlide(index);
-                this.resetAutoplay();
             });
             this.dotsContainer.appendChild(dot);
         });
@@ -333,7 +328,6 @@ class StoriesSlider {
 
     goToSlide(index) {
         this.showSlide(index);
-        this.resetAutoplay();
     }
 
     startAutoplay() {
@@ -377,11 +371,9 @@ class StoriesSlider {
                 if (diff > 0) {
                     // Swipe left - next slide
                     this.nextSlide();
-                    this.resetAutoplay();
                 } else {
                     // Swipe right - previous slide
                     this.prevSlide();
-                    this.resetAutoplay();
                 }
             }
         };
@@ -637,14 +629,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 document.addEventListener('visibilitychange', () => {
-    if (storiesSliderInstance) {
-        if (document.hidden) {
-            storiesSliderInstance.stopAutoplay();
-        } else {
-            storiesSliderInstance.startAutoplay();
-        }
-    }
-
+    // Stories slider - autoplay disabled, no need to pause/resume
+    
     if (credentialsSliderInstance) {
         if (document.hidden) {
             credentialsSliderInstance.stopAutoplay();
@@ -719,11 +705,9 @@ document.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowLeft') {
                 e.preventDefault();
                 storiesSliderInstance.prevSlide();
-                storiesSliderInstance.resetAutoplay();
             } else if (e.key === 'ArrowRight') {
                 e.preventDefault();
                 storiesSliderInstance.nextSlide();
-                storiesSliderInstance.resetAutoplay();
             }
         }
     }
@@ -745,25 +729,6 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-// ===================================
-// SCROLL PROGRESS INDICATOR (Optional)
-// ===================================
-window.addEventListener('scroll', () => {
-    // Could add scroll progress bar here if needed
-    // For now, we'll keep it simple
-});
-
-// ===================================
-// SERVICE WORKER FOR OFFLINE SUPPORT (Optional)
-// ===================================
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        // Uncomment to enable service worker
-        // navigator.serviceWorker.register('/service-worker.js')
-        //     .then(registration => console.log('SW registered:', registration))
-        //     .catch(error => console.log('SW registration failed:', error));
-    });
-}
 // ===================================
 // VIEW CREDENTIAL MODAL
 // ===================================
@@ -881,7 +846,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-
+// ===================================
+// STORY READ MORE TOGGLE
+// ===================================
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.story-read-more').forEach(button => {
         button.addEventListener('click', function() {
@@ -902,9 +869,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// ===================================
-// CONSOLE WELCOME MESSAGE
-// ===================================
 // ===================================
 // CONSOLE WELCOME MESSAGE
 // ===================================
