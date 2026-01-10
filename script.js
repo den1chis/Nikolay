@@ -243,7 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ===================================
-// SUCCESS STORIES SLIDER (NO AUTOPLAY)
+// SUCCESS STORIES SLIDER (NO AUTOPLAY, NO TOUCH)
 // ===================================
 class StoriesSlider {
     constructor() {
@@ -258,7 +258,6 @@ class StoriesSlider {
         if (this.slides.length === 0) return;
     
         this.createDots();
-        this.initTouchEvents();
     
         this.prevBtn = document.querySelector('.slider-arrow-prev-stories');
         this.nextBtn = document.querySelector('.slider-arrow-next-stories');
@@ -318,41 +317,9 @@ class StoriesSlider {
     goToSlide(index) {
         this.showSlide(index);
     }
-
-    initTouchEvents() {
-        let touchStartX = 0;
-        let touchEndX = 0;
-        const slider = document.querySelector('.stories-slider');
-
-        if (!slider) return;
-
-        slider.addEventListener('touchstart', (e) => {
-            touchStartX = e.changedTouches[0].screenX;
-        }, { passive: true });
-
-        slider.addEventListener('touchend', (e) => {
-            touchEndX = e.changedTouches[0].screenX;
-            this.handleSwipe();
-        }, { passive: true });
-
-        const handleSwipe = () => {
-            const swipeThreshold = 50;
-            const diff = touchStartX - touchEndX;
-
-            if (Math.abs(diff) > swipeThreshold) {
-                if (diff > 0) {
-                    this.nextSlide();
-                } else {
-                    this.prevSlide();
-                }
-            }
-        };
-
-        this.handleSwipe = handleSwipe;
-    }
 }
 
-// Initialize stories slider - ONLY ONCE
+// Initialize stories slider
 document.addEventListener('DOMContentLoaded', () => {
     new StoriesSlider();
 });
