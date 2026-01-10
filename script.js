@@ -162,7 +162,6 @@ class DirectionModal {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 this.closeModal();
-                // Modal will stay open, just scroll to contact
             });
         });
 
@@ -244,15 +243,13 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ===================================
-// SUCCESS STORIES SLIDER
+// SUCCESS STORIES SLIDER (NO AUTOPLAY)
 // ===================================
 class StoriesSlider {
     constructor() {
         this.currentSlide = 0;
         this.slides = document.querySelectorAll('.story-card');
         this.dotsContainer = document.querySelector('.slider-dots-stories');
-        this.autoplayInterval = null;
-        this.autoplayDelay = 7000; // 7 seconds
 
         this.init();
     }
@@ -260,13 +257,9 @@ class StoriesSlider {
     init() {
         if (this.slides.length === 0) return;
     
-        // Create dots
         this.createDots();
-    
-        // Touch events for mobile
         this.initTouchEvents();
     
-        // Arrow buttons for stories
         this.prevBtn = document.querySelector('.slider-arrow-prev-stories');
         this.nextBtn = document.querySelector('.slider-arrow-next-stories');
         
@@ -282,12 +275,11 @@ class StoriesSlider {
             });
         }
     
-        // Show first slide
         this.showSlide(0);
     }
 
     createDots() {
-        this.dotsContainer.innerHTML = ''; // Очищаем перед созданием
+        this.dotsContainer.innerHTML = '';
         this.slides.forEach((_, index) => {
             const dot = document.createElement('span');
             dot.classList.add('dot-story');
@@ -301,16 +293,13 @@ class StoriesSlider {
     }
 
     showSlide(index) {
-        // Remove active class from all slides
         this.slides.forEach(slide => {
             slide.classList.remove('active');
         });
 
-        // Update current slide
         this.currentSlide = index;
         this.slides[this.currentSlide].classList.add('active');
 
-        // Update dots
         this.dots.forEach((dot, i) => {
             dot.classList.toggle('active', i === index);
         });
@@ -328,23 +317,6 @@ class StoriesSlider {
 
     goToSlide(index) {
         this.showSlide(index);
-    }
-
-    startAutoplay() {
-        this.autoplayInterval = setInterval(() => {
-            this.nextSlide();
-        }, this.autoplayDelay);
-    }
-
-    stopAutoplay() {
-        if (this.autoplayInterval) {
-            clearInterval(this.autoplayInterval);
-        }
-    }
-
-    resetAutoplay() {
-        this.stopAutoplay();
-        this.startAutoplay();
     }
 
     initTouchEvents() {
@@ -369,10 +341,8 @@ class StoriesSlider {
 
             if (Math.abs(diff) > swipeThreshold) {
                 if (diff > 0) {
-                    // Swipe left - next slide
                     this.nextSlide();
                 } else {
-                    // Swipe right - previous slide
                     this.prevSlide();
                 }
             }
@@ -382,13 +352,13 @@ class StoriesSlider {
     }
 }
 
-// Initialize stories slider
+// Initialize stories slider - ONLY ONCE
 document.addEventListener('DOMContentLoaded', () => {
     new StoriesSlider();
 });
 
 // ===================================
-// CREDENTIALS SLIDER
+// CREDENTIALS SLIDER (WITH AUTOPLAY)
 // ===================================
 class CredentialsSlider {
     constructor() {
@@ -396,7 +366,7 @@ class CredentialsSlider {
         this.slides = document.querySelectorAll('.credential-card');
         this.dotsContainer = document.querySelector('.slider-dots-credentials');
         this.autoplayInterval = null;
-        this.autoplayDelay = 5000; // 5 seconds
+        this.autoplayDelay = 5000;
 
         this.init();
     }
@@ -404,10 +374,7 @@ class CredentialsSlider {
     init() {
         if (this.slides.length === 0) return;
 
-        // Create dots
         this.createDots();
-
-        // Touch events for mobile
         this.initTouchEvents();
         
         this.prevBtn = document.querySelector('.slider-arrow-prev');
@@ -427,15 +394,12 @@ class CredentialsSlider {
             });
         }
 
-        // Start autoplay
         this.startAutoplay();
-
-        // Show first slide
         this.showSlide(0);
     }
 
     createDots() {
-        this.dotsContainer.innerHTML = ''; // Очищаем перед созданием
+        this.dotsContainer.innerHTML = '';
         this.slides.forEach((_, index) => {
             const dot = document.createElement('span');
             dot.classList.add('dot-credential');
@@ -450,16 +414,13 @@ class CredentialsSlider {
     }
 
     showSlide(index) {
-        // Remove active class from all slides
         this.slides.forEach(slide => {
             slide.classList.remove('active');
         });
 
-        // Update current slide
         this.currentSlide = index;
         this.slides[this.currentSlide].classList.add('active');
 
-        // Update dots
         this.dots.forEach((dot, i) => {
             dot.classList.toggle('active', i === index);
         });
@@ -519,11 +480,9 @@ class CredentialsSlider {
 
             if (Math.abs(diff) > swipeThreshold) {
                 if (diff > 0) {
-                    // Swipe left - next slide
                     this.nextSlide();
                     this.resetAutoplay();
                 } else {
-                    // Swipe right - previous slide
                     this.prevSlide();
                     this.resetAutoplay();
                 }
@@ -533,11 +492,6 @@ class CredentialsSlider {
         this.handleSwipe = handleSwipe;
     }
 }
-
-// Initialize credentials slider
-document.addEventListener('DOMContentLoaded', () => {
-    new CredentialsSlider();
-});
 
 // ===================================
 // FAQ ACCORDION
@@ -555,17 +509,14 @@ class FAQAccordion {
             question.addEventListener('click', () => {
                 const isActive = item.classList.contains('active');
 
-                // Close all items (optional - remove if you want multiple open)
                 this.faqItems.forEach(otherItem => {
                     if (otherItem !== item) {
                         otherItem.classList.remove('active');
                     }
                 });
 
-                // Toggle current item
                 item.classList.toggle('active');
 
-                // Track event
                 if (!isActive) {
                     const questionText = question.querySelector('span').textContent;
                     this.trackEvent('FAQ', 'expand', questionText);
@@ -614,23 +565,16 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ===================================
-// HANDLE VISIBILITY CHANGE (PAUSE AUTOPLAY)
+// HANDLE VISIBILITY CHANGE
 // ===================================
-let storiesSliderInstance;
 let credentialsSliderInstance;
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Store instance for visibility handling
-    const slider = new StoriesSlider();
-    storiesSliderInstance = slider;
-
     const credSlider = new CredentialsSlider();
     credentialsSliderInstance = credSlider;
 });
 
 document.addEventListener('visibilitychange', () => {
-    // Stories slider - autoplay disabled, no need to pause/resume
-    
     if (credentialsSliderInstance) {
         if (document.hidden) {
             credentialsSliderInstance.stopAutoplay();
@@ -644,21 +588,18 @@ document.addEventListener('visibilitychange', () => {
 // PERFORMANCE MONITORING
 // ===================================
 window.addEventListener('load', () => {
-    // Check page load time
     if (window.performance) {
         const perfData = window.performance.timing;
         const pageLoadTime = perfData.loadEventEnd - perfData.navigationStart;
 
         console.log(`Page load time: ${pageLoadTime}ms`);
 
-        // Log warning if load time exceeds 2 seconds
         if (pageLoadTime > 2000) {
             console.warn('Page load time exceeds 2 seconds. Consider optimization.');
         } else {
             console.log('✓ Page load time under 2 seconds - Great!');
         }
 
-        // Track load time
         if (typeof gtag !== 'undefined') {
             gtag('event', 'timing_complete', {
                 'name': 'load',
@@ -670,7 +611,7 @@ window.addEventListener('load', () => {
 });
 
 // ===================================
-// LAZY LOAD IMAGES (IF ADDED LATER)
+// LAZY LOAD IMAGES
 // ===================================
 if ('loading' in HTMLImageElement.prototype) {
     const images = document.querySelectorAll('img[loading="lazy"]');
@@ -680,7 +621,6 @@ if ('loading' in HTMLImageElement.prototype) {
         }
     });
 } else {
-    // Fallback for browsers that don't support lazy loading
     const script = document.createElement('script');
     script.src = 'https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.3.2/lazysizes.min.js';
     document.body.appendChild(script);
@@ -690,7 +630,6 @@ if ('loading' in HTMLImageElement.prototype) {
 // ACCESSIBLE KEYBOARD NAVIGATION
 // ===================================
 document.addEventListener('keydown', (e) => {
-    // Navigate FAQ with keyboard
     if (e.key === 'Enter' || e.key === ' ') {
         if (e.target.classList.contains('faq-question')) {
             e.preventDefault();
@@ -698,21 +637,7 @@ document.addEventListener('keydown', (e) => {
         }
     }
 
-    // Navigate stories slider with arrow keys
-    if (storiesSliderInstance) {
-        const sliderElement = document.querySelector('.stories-slider');
-        if (sliderElement && sliderElement.contains(document.activeElement)) {
-            if (e.key === 'ArrowLeft') {
-                e.preventDefault();
-                storiesSliderInstance.prevSlide();
-            } else if (e.key === 'ArrowRight') {
-                e.preventDefault();
-                storiesSliderInstance.nextSlide();
-            }
-        }
-    }
-
-    // Navigate credentials slider with arrow keys
+    // Credentials slider keyboard navigation
     if (credentialsSliderInstance) {
         const credSliderElement = document.querySelector('.credentials-slider');
         if (credSliderElement && credSliderElement.contains(document.activeElement)) {
@@ -739,7 +664,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const img = this.closest('.credential-card').querySelector('.credential-image img');
             const imgSrc = img.src;
             
-            // Create modal
             const modal = document.createElement('div');
             modal.className = 'credential-modal';
             modal.innerHTML = `
@@ -751,12 +675,10 @@ document.addEventListener('DOMContentLoaded', () => {
             
             document.body.appendChild(modal);
             
-            // Calculate scrollbar width to prevent jump
             const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
             document.body.style.overflow = 'hidden';
             document.body.style.paddingRight = `${scrollbarWidth}px`;
             
-            // Add styles if not exists
             if (!document.getElementById('credential-modal-styles')) {
                 const style = document.createElement('style');
                 style.id = 'credential-modal-styles';
@@ -823,7 +745,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.head.appendChild(style);
             }
             
-            // Close modal
             modal.addEventListener('click', function(e) {
                 if (e.target === modal || e.target.classList.contains('credential-modal-close')) {
                     modal.remove();
@@ -832,7 +753,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
             
-            // Close on ESC key
             const handleEscape = (e) => {
                 if (e.key === 'Escape') {
                     modal.remove();
@@ -862,7 +782,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 storyContent.classList.add('collapsed');
                 storyContent.classList.remove('expanded');
                 this.textContent = 'Читать далее';
-                // Scroll to top of story card
                 this.closest('.story-card').scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         });
@@ -875,4 +794,4 @@ document.addEventListener('DOMContentLoaded', () => {
 console.log('%c👋 Добро пожаловать!', 'font-size: 20px; font-weight: bold; color: #5B9AA9;');
 console.log('%cНиколай Николаевич Абаза - Психолог-аддиктолог', 'font-size: 14px; color: #4A4A4A;');
 console.log('%cПервый шаг к свободе от зависимости', 'font-size: 12px; color: #6A6A6A;');
-console.log('%c📞 +7 707 912 7964', 'font-size: 12px; color: #5B9AA9;');
+console.log('%c📞 +7 771 103 12 32', 'font-size: 12px; color: #5B9AA9;');
